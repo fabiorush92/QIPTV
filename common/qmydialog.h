@@ -1,6 +1,7 @@
 #ifndef QMYDIALOG_H
 #define QMYDIALOG_H
 
+#include <QApplication>
 #include <QDialog>
 #include <QSettings>
 #include <QCloseEvent>

@@ -1,5 +1,4 @@
 #include "qmydialog.h"
-#include "ui_qmydialog.h"
 
 QMyDialog::QMyDialog(QWidget *parent, QString dialogName, QString dialogTitle) :
     QDialog(parent)

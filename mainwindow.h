@@ -26,6 +26,7 @@ private:
     Ui::MainWindow *ui;
     QSettings *reg = new QSettings(this);
     PanelManager *pMan = new PanelManager(this);
+    PanelForm *pForm = new PanelForm(this);
 
     void closeEvent(QCloseEvent *event);
 

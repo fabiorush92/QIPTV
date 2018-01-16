@@ -56,8 +56,8 @@ void MainWindow::on_pushButton_clicked()
 //    pMan->start();
 //    qDebug() << QDateTime::currentDateTime().toString("HH:mm:ss.zzz") << "START";
 
-    PanelForm *pf = new PanelForm(this);
-    pf->show();
+
+    qDebug() << pForm->newForm();
 }
 
 void MainWindow::panelStatusUpdate(PanelStatus *status)

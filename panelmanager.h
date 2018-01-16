@@ -29,6 +29,17 @@ struct PanelInfo
     QString password;
 };
 
+inline QDebug operator << (QDebug dbg, PanelInfo info)
+{
+    dbg.space() << "PanelInfo ["
+                << QString("Host:%1").arg(info.host)
+                << QString("Username:%1").arg(info.username)
+                << QString("Password:%1").arg(info.password)
+                << "]";
+
+    return dbg.maybeSpace();
+}
+
 
 // PanelStatus
 class PanelStatus : public QObject

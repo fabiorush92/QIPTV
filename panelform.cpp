@@ -7,12 +7,54 @@ PanelForm::PanelForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(ui->buttonBox,&QDialogButtonBox::accepted,this,&PanelForm::accept);
+    connect(ui->buttonBox,&QDialogButtonBox::rejected,this,&PanelForm::reject);
     connect(ui->lineURL,&QLineEdit::textChanged,this,&PanelForm::parseURL);
 }
 
 PanelForm::~PanelForm()
 {
     delete ui;
+}
+
+PanelInfo PanelForm::newForm()
+{
+    return newForm(PanelInfo());
+}
+
+PanelInfo PanelForm::newForm(PanelInfo info)
+{
+    this->clear();
+    this->insertInfo(info);
+
+    PanelInfo newinfo;
+    int ret = this->exec();
+
+    if(ret == QDialog::Accepted)
+    {
+        newinfo.host = ui->lineHost->text();
+        newinfo.username = ui->lineUsername->text();
+        newinfo.password = ui->linePassword->text();
+    }
+
+    return newinfo;
+}
+
+void PanelForm::clear()
+{
+    ui->lineHost->clear();
+    ui->linePassword->clear();
+    ui->lineURL->clear();
+    ui->lineUsername->clear();
+}
+
+void PanelForm::insertInfo(PanelInfo info)
+{
+    ui->lineURL->clear();
+
+    ui->lineHost->setText(info.host);
+    ui->lineUsername->setText(info.username);
+    ui->linePassword->setText(info.password);
 }
 
 void PanelForm::parseURL()

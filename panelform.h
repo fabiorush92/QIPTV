@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QDebug>
 
+#include <panelmanager.h>
+
 namespace Ui {
 class PanelForm;
 }
@@ -16,8 +18,15 @@ public:
     explicit PanelForm(QWidget *parent = 0);
     ~PanelForm();
 
+    PanelInfo newForm();
+    PanelInfo newForm(PanelInfo info);
+
+public slots:
+    void clear();
+
 private:
     Ui::PanelForm *ui;
+    void insertInfo(PanelInfo info);
 
 private slots:
     void parseURL();

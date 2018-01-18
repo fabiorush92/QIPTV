@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QDebug>
 
-#include <panelmanager.h>
+#include <paneltypes.h>
 
 namespace Ui {
 class PanelForm;
@@ -30,6 +30,7 @@ private:
 
 private slots:
     void parseURL();
+    void checkInfo();
 
 };
 

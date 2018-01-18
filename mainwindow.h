@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QCloseEvent>
 
+#include <paneltypes.h>
 #include <panelmanager.h>
 #include <panelform.h>
 #include <common/syslogmessagehandler.h>
@@ -20,12 +21,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void init();
 
 private:
     Ui::MainWindow *ui;
     QSettings *reg = new QSettings(this);
-    PanelManager *pMan = new PanelManager(this);
+    PanelManager *pManager = new PanelManager(this);
     PanelForm *pForm = new PanelForm(this);
 
     void closeEvent(QCloseEvent *event);

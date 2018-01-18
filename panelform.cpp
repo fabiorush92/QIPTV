@@ -7,7 +7,7 @@ PanelForm::PanelForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->buttonBox,&QDialogButtonBox::accepted,this,&PanelForm::accept);
+    connect(ui->buttonBox,&QDialogButtonBox::accepted,this,&PanelForm::checkInfo);
     connect(ui->buttonBox,&QDialogButtonBox::rejected,this,&PanelForm::reject);
     connect(ui->lineURL,&QLineEdit::textChanged,this,&PanelForm::parseURL);
 }
@@ -32,6 +32,7 @@ PanelInfo PanelForm::newForm(PanelInfo info)
 
     if(ret == QDialog::Accepted)
     {
+        newinfo.name = ui->lineName->text();
         newinfo.host = ui->lineHost->text();
         newinfo.username = ui->lineUsername->text();
         newinfo.password = ui->linePassword->text();
@@ -42,16 +43,18 @@ PanelInfo PanelForm::newForm(PanelInfo info)
 
 void PanelForm::clear()
 {
+    ui->lineName->clear();
     ui->lineHost->clear();
     ui->linePassword->clear();
-    ui->lineURL->clear();
     ui->lineUsername->clear();
+    ui->lineURL->clear();
 }
 
 void PanelForm::insertInfo(PanelInfo info)
 {
     ui->lineURL->clear();
 
+    ui->lineName->setText(info.name);
     ui->lineHost->setText(info.host);
     ui->lineUsername->setText(info.username);
     ui->linePassword->setText(info.password);
@@ -59,8 +62,7 @@ void PanelForm::insertInfo(PanelInfo info)
 
 void PanelForm::parseURL()
 {
-    // http://85.114.128.105:2475/panel_api.php?mode=auth&username=thisis85&password=ip85
-
+    // clear ui
     ui->lineHost->clear();
     ui->lineUsername->clear();
     ui->linePassword->clear();
@@ -70,10 +72,12 @@ void PanelForm::parseURL()
     url.remove("http://");
     url.remove(" ");
 
+    // host, with checks
     QString host = url.section("/",0,0);
     if(host.contains(".") && !host.contains(QRegExp("[?&]")))
         ui->lineHost->setText(host);
 
+    // username and password from php request
     QStringList list = url.split(QRegExp("[?&]"));
     for(QString str : list)
     {
@@ -82,7 +86,38 @@ void PanelForm::parseURL()
         else if(str.startsWith("password="))
             password = str.remove("password=");
     }
-
     ui->lineUsername->setText(username);
     ui->linePassword->setText(password);
+}
+
+void PanelForm::checkInfo()
+{
+    // info checks
+
+    if(ui->lineName->text().isEmpty())
+    {
+        qWarning() << "A valid name must be specified!";
+        return;
+    }
+
+    if(ui->lineHost->text().isEmpty())
+    {
+        qWarning() << "A valid host must be specified!";
+        return;
+    }
+
+    if(ui->lineUsername->text().isEmpty())
+    {
+        qWarning() << "A valid username must be specified!";
+        return;
+    }
+
+    if(ui->linePassword->text().isEmpty())
+    {
+        qWarning() << "A valid password must be specified!";
+        return;
+    }
+
+    // accept dialog only if checks are passed
+    this->accept();
 }

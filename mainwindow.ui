@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>351</height>
+    <width>705</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="font">
@@ -19,29 +19,11 @@
    <string/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>9</x>
-      <y>9</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>10</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTableWidget" name="tableWidget"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -49,11 +31,62 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>484</width>
+     <width>705</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuPanel">
+    <property name="title">
+     <string>Panel</string>
+    </property>
+    <addaction name="actionAddPanel"/>
+    <addaction name="actionRemovePanel"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAboutQIPTV"/>
+    <addaction name="actionAboutQt"/>
+   </widget>
+   <widget class="QMenu" name="menuQIPTV">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuQIPTV"/>
+   <addaction name="menuPanel"/>
+   <addaction name="menuHelp"/>
   </widget>
+  <action name="actionAddPanel">
+   <property name="text">
+    <string>Add Panel...</string>
+   </property>
+  </action>
+  <action name="actionRemovePanel">
+   <property name="text">
+    <string>Remove Panel</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAboutQIPTV">
+   <property name="text">
+    <string>About QIPTV...</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="text">
+    <string>About Qt...</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

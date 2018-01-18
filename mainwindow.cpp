@@ -10,24 +10,22 @@ MainWindow::MainWindow(QWidget *parent) :
     qInstallMessageHandler(SyslogMessageHandler);
 #endif
 
-    // setup UI
+    // UI setup
     ui->setupUi(this);
+
+    // UI connections
+    connect(ui->actionAboutQt,&QAction::triggered,qApp,&QApplication::aboutQt);
 
     // restore last mainwindow state and geometry
     restoreGeometry(reg->value("MainWindowGeometry").toByteArray());
     restoreState(reg->value("MainWindowState").toByteArray());
 
-    connect(pMan,&PanelManager::newPanelStatus,this,&MainWindow::panelStatusUpdate);
+    connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::panelStatusUpdate);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::init()
-{
-    qDebug() << pMan->checkInternetConnection();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

@@ -37,12 +37,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // check internet connection
     if(pManager->checkInternetConnection())
     {
-        labConnection->setText("Connesso");
+        labConnection->setText("Connected");
         labConnection->setColor(Qt::darkGreen);
     }
     else
     {
-        labConnection->setText("Disconnesso");
+        labConnection->setText("Disconnected");
         labConnection->setColor(Qt::darkRed);
     }
 }
@@ -64,7 +64,7 @@ PanelInfo MainWindow::getSelectedInfo()
     if(ui->tablePanels->selectedItems().isEmpty())
         return PanelInfo();
 
-    return pRepo->getInfoByName(ui->tablePanels->item(ui->tablePanels->selectedItems().at(0)->row(), 0)->text());
+    return pRepo->getInfo(ui->tablePanels->item(ui->tablePanels->selectedItems().at(0)->row(), 0)->text());
 }
 
 int MainWindow::searchInfoIntoTable(PanelInfo info)
@@ -121,7 +121,7 @@ void MainWindow::readRepository()
     pManager->unsubscribeAll();
 
     // get panels from repo, add to the table and subscribe all
-    for(PanelInfo info : pRepo->getList())
+    for(PanelInfo info : pRepo->getInfoList())
     {
         addPanelToTable(info);
         pManager->subscribePanel(info);
@@ -149,7 +149,10 @@ void MainWindow::removeSelectedPanelFromRepository()
 
 void MainWindow::updatePanel(PanelStatus *status)
 {
-    qDebug() << status;
+    //qDebug() << status;
+    pRepo->addStatus(status);
+
+    qDebug() << pRepo->getLastStatusList();
 }
 
 void MainWindow::errorPanel(QString name, QString errorText)

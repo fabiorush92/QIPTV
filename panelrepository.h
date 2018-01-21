@@ -14,18 +14,25 @@ class PanelRepository : public QObject
 public:
     explicit PanelRepository(QObject *parent = nullptr);
 
-    PanelInfo getInfoByName(QString name);
-    QList<PanelInfo> getList();
-    QStringList getNameList();
+    PanelInfo getInfo(QString name);
+    QList<PanelInfo> getInfoList();
+    QStringList getInfoNames();
 
     void setInfo(PanelInfo info);
     void addInfo(PanelInfo info);
     void deleteInfo(PanelInfo info);
     void deleteInfo(QString name);
 
+    PanelStatus* getLastStatus(QString name);
+    QList<PanelStatus *> getLastStatusList();
+    void addStatus(PanelStatus *status);
+
+public slots:
+    void clearStatusList() { _statusList.clear(); }
+
 private:
     QSettings *_reg = new QSettings(this);
-
+    QList<PanelStatus*> _statusList;
 };
 
 #endif // PANELREPOSITORY_H

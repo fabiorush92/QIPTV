@@ -2,15 +2,15 @@
 
 PanelRepository::PanelRepository(QObject *parent) : QObject(parent)
 {
-    // enter into "Repository" group, needed to retrieve childKeys()
+    // enter into "Repository" group, needed to retrieve childGroup() list
     _reg->beginGroup("Repository");
 }
 
-PanelInfo PanelRepository::getInfoByName(QString name)
+PanelInfo PanelRepository::getInfo(QString name)
 {
     PanelInfo info;
 
-    if(!getNameList().contains(name))
+    if(!getInfoNames().contains(name))
     {
         qWarning() << "Name not found into repository!";
         return info;
@@ -27,24 +27,27 @@ PanelInfo PanelRepository::getInfoByName(QString name)
     // exit from name group
     _reg->endGroup();
 
+    //sync
+    _reg->sync();
+
     return info;
 }
 
-QStringList PanelRepository::getNameList()
+QStringList PanelRepository::getInfoNames()
 {
-    // get repository childKeys()
+    // get repository grouplist()
     return _reg->childGroups();
 }
 
-QList<PanelInfo> PanelRepository::getList()
+QList<PanelInfo> PanelRepository::getInfoList()
 {
     // list creation
     QList<PanelInfo> list;
 
     // get info of every child and build PanelInfo list
-    for(QString name : getNameList())
+    for(QString name : getInfoNames())
     {
-        list.append(getInfoByName(name));
+        list.append(getInfo(name));
     }
 
     return list;
@@ -61,6 +64,7 @@ void PanelRepository::setInfo(PanelInfo info)
     _reg->setValue(QString("%1/Host").arg(info.name), info.host);
     _reg->setValue(QString("%1/Username").arg(info.name), info.username);
     _reg->setValue(QString("%1/Password").arg(info.name), info.password);
+    _reg->sync();
 }
 
 void PanelRepository::addInfo(PanelInfo info)
@@ -76,4 +80,39 @@ void PanelRepository::deleteInfo(PanelInfo info)
 void PanelRepository::deleteInfo(QString name)
 {
     _reg->remove(QString("%1").arg(name));
+    _reg->sync();
+}
+
+PanelStatus* PanelRepository::getLastStatus(QString name)
+{
+    // find status name into list
+    for(PanelStatus *status : _statusList)
+    {
+        if(status->reqName() == name)
+            return status;
+    }
+
+    return new PanelStatus(this);
+}
+
+QList<PanelStatus*> PanelRepository::getLastStatusList()
+{
+    return this->_statusList;
+}
+
+void PanelRepository::addStatus(PanelStatus *status)
+{
+    // delete all statuses with new status name
+    if(!_statusList.isEmpty())
+    {
+        //for(PanelStatus *Istatus : _statusList)
+        for(int i=0;i<_statusList.size();i++)
+        {
+            if(_statusList[i]->reqName() == status->reqName())
+                _statusList.removeOne(_statusList[i])
+        }
+    }
+
+    // append
+    _statusList.append(status);
 }

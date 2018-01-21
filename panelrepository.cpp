@@ -11,7 +11,10 @@ PanelInfo PanelRepository::getInfoByName(QString name)
     PanelInfo info;
 
     if(!getNameList().contains(name))
+    {
+        qWarning() << "Name not found into repository!";
         return info;
+    }
 
     // enter into name group
     _reg->beginGroup(name);
@@ -30,7 +33,7 @@ PanelInfo PanelRepository::getInfoByName(QString name)
 QStringList PanelRepository::getNameList()
 {
     // get repository childKeys()
-    return _reg->childKeys();
+    return _reg->childGroups();
 }
 
 QList<PanelInfo> PanelRepository::getList()
@@ -49,9 +52,20 @@ QList<PanelInfo> PanelRepository::getList()
 
 void PanelRepository::setInfo(PanelInfo info)
 {
+    if(!info.isValid())
+    {
+        qWarning() << "Repository: Panel not valid!";
+        return;
+    }
+
     _reg->setValue(QString("%1/Host").arg(info.name), info.host);
     _reg->setValue(QString("%1/Username").arg(info.name), info.username);
     _reg->setValue(QString("%1/Password").arg(info.name), info.password);
+}
+
+void PanelRepository::addInfo(PanelInfo info)
+{
+    setInfo(info);
 }
 
 void PanelRepository::deleteInfo(PanelInfo info)

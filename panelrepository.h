@@ -19,7 +19,7 @@ public:
     QStringList getNameList();
 
     void setInfo(PanelInfo info);
-
+    void addInfo(PanelInfo info);
     void deleteInfo(PanelInfo info);
     void deleteInfo(QString name);
 

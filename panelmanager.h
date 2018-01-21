@@ -34,6 +34,9 @@ public:
 
 signals:
     void newPanelStatus(PanelStatus*);
+    void managerStarted();
+    void managerStopped();
+    void replyError(QString reqName, QString errorText);
 
 public slots:
     void unsubscribeAll() { _listPanels.clear(); }

@@ -5,22 +5,46 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    // install message handler only on release
+    // install message handler [only on release]
 #ifndef QT_DEBUG
     qInstallMessageHandler(SyslogMessageHandler);
 #endif
 
-    // UI setup
-    ui->setupUi(this);
+    // pass reg reference at QMyDialog
+    pForm->setREGref(reg);
 
-    // UI connections
-    connect(ui->actionAboutQt,&QAction::triggered,qApp,&QApplication::aboutQt);
+    // UI setup
+    ui->setupUi(this);    
+
+    ui->statusBar->addPermanentWidget(labConnection);
 
     // restore last mainwindow state and geometry
     restoreGeometry(reg->value("MainWindowGeometry").toByteArray());
     restoreState(reg->value("MainWindowState").toByteArray());
 
-    connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::panelStatusUpdate);
+    // UI connections
+    connect(ui->actionAboutQt,&QAction::triggered,qApp,&QApplication::aboutQt);
+    connect(ui->actionExit,&QAction::triggered,this,&MainWindow::close);
+    connect(ui->actionAddPanel,&QAction::triggered,this,&MainWindow::addNewPanelToRepository);
+
+    // logic connections
+    connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::updatePanel);
+    connect(pManager,&PanelManager::replyError,this,&MainWindow::errorPanel);
+
+    // read repository
+    readRepository();
+
+    // check internet connection
+    if(pManager->checkInternetConnection())
+    {
+        labConnection->setText("Connesso");
+        labConnection->setColor(Qt::darkGreen);
+    }
+    else
+    {
+        labConnection->setText("Disconnesso");
+        labConnection->setColor(Qt::darkRed);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -35,32 +59,100 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void MainWindow::on_pushButton_clicked()
+PanelInfo MainWindow::getSelectedInfo()
 {
-//    PanelInfo info;
+    if(ui->tablePanels->selectedItems().isEmpty())
+        return PanelInfo();
 
-//    // http://85.114.128.105:2475/panel_api.php?mode=auth&username=thisis85&password=ip85
-//    info.host = "85.114.128.105:2475";
-//    info.username = "thisis85";
-//    info.password = "ip85";
-//    pMan->subscribePanel(info);
-
-//    // http://217.79.179.87:4647/panel_api.php?username=ipbrief&password=briefip
-//    info.host = "217.79.179.87:4647";
-//    info.username = "ipbrief";
-//    info.password = "briefip";
-//    pMan->subscribePanel(info);
-
-//    pMan->start();
-//    qDebug() << QDateTime::currentDateTime().toString("HH:mm:ss.zzz") << "START";
-
-
-    qDebug() << pForm->newForm();
+    return pRepo->getInfoByName(ui->tablePanels->item(ui->tablePanels->selectedItems().at(0)->row(), 0)->text());
 }
 
-void MainWindow::panelStatusUpdate(PanelStatus *status)
+int MainWindow::searchInfoIntoTable(PanelInfo info)
 {
-    qDebug() << QDateTime::currentDateTime().toString("HH:mm:ss.zzz") << status;
+    for(int i=0;i<ui->tablePanels->rowCount();i++)
+    {
+        if(ui->tablePanels->item(i,0)->text() == info.name)
+            return i;   // name finded, return index
+    }
+
+    // search failed
+    return -1;
 }
 
+void MainWindow::setTableItem(int row, int column, QString string)
+{
+    ui->tablePanels->setItem(row, column, new QTableWidgetItem(string));
+}
 
+void MainWindow::addPanelToTable(PanelInfo info)
+{
+    ui->tablePanels->setRowCount(ui->tablePanels->rowCount() + 1);
+
+    int index = ui->tablePanels->rowCount() - 1;
+
+    setTableItem(index,0,info.name);
+}
+
+void MainWindow::clearTable()
+{
+    ui->tablePanels->clear();
+
+    // NAME ACCOUNTSTATUS VISIONSTATUS EXPIREDATE INFOS
+    ui->tablePanels->setColumnCount(5);
+    ui->tablePanels->setRowCount(0);
+
+    // hide headers
+    ui->tablePanels->horizontalHeader()->setVisible(false);
+    ui->tablePanels->verticalHeader()->setVisible(false);
+
+    // stretch last section
+    ui->tablePanels->horizontalHeader()->setStretchLastSection(true);
+}
+
+void MainWindow::readRepository()
+{
+    // stop panel manager
+    pManager->stop();
+
+    // clear table
+    clearTable();
+
+    // unsubscribe
+    pManager->unsubscribeAll();
+
+    // get panels from repo, add to the table and subscribe all
+    for(PanelInfo info : pRepo->getList())
+    {
+        addPanelToTable(info);
+        pManager->subscribePanel(info);
+    }
+
+    // resize table
+    ui->tablePanels->resizeRowsToContents();
+    ui->tablePanels->resizeColumnsToContents();
+
+    // start panel manager
+    pManager->start();
+}
+
+void MainWindow::addNewPanelToRepository()
+{
+    pRepo->addInfo(pForm->openForm());
+
+    readRepository();
+}
+
+void MainWindow::removeSelectedPanelFromRepository()
+{
+
+}
+
+void MainWindow::updatePanel(PanelStatus *status)
+{
+    qDebug() << status;
+}
+
+void MainWindow::errorPanel(QString name, QString errorText)
+{
+    ui->statusBar->showMessage(QString("[%1] Error: %2").arg(name).arg(errorText),3000);
+}

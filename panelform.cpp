@@ -2,7 +2,7 @@
 #include "ui_panelform.h"
 
 PanelForm::PanelForm(QWidget *parent) :
-    QDialog(parent),
+    QMyDialog(parent,"PanelForm","Panel informations"),
     ui(new Ui::PanelForm)
 {
     ui->setupUi(this);
@@ -17,12 +17,12 @@ PanelForm::~PanelForm()
     delete ui;
 }
 
-PanelInfo PanelForm::newForm()
+PanelInfo PanelForm::openForm()
 {
-    return newForm(PanelInfo());
+    return openForm(PanelInfo());
 }
 
-PanelInfo PanelForm::newForm(PanelInfo info)
+PanelInfo PanelForm::openForm(PanelInfo info)
 {
     this->clear();
     this->insertInfo(info);

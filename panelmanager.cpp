@@ -13,12 +13,14 @@ void PanelManager::start()
 {
     _timer->stop();
     _timer->start(_tick);
+    emit managerStarted();
     getSubscribersStatus();
 }
 
 void PanelManager::stop()
 {
     _timer->stop();
+    emit managerStopped();
 }
 
 void PanelManager::getSubscribersStatus()
@@ -37,8 +39,15 @@ void PanelManager::getPanelStatus(PanelInfo info)
     url.replace("[username]",info.username);
     url.replace("[password]",info.password);
 
+    // build request
+    QNetworkRequest req = QNetworkRequest(QUrl(url));
+
+    // inject info name into request's user attribute
+    // (this permits reply association with the original request)
+    req.setAttribute(QNetworkRequest::User, info.name);
+
     // start request
-    _netman->get(QNetworkRequest(QUrl(url)));
+    _netman->get(req);
 }
 
 bool PanelManager::checkInternetConnection()
@@ -53,15 +62,25 @@ bool PanelManager::checkInternetConnection()
 
 void PanelManager::replyFinished(QNetworkReply *reply)
 {
-    // JSON parsing
-    _json = QJsonDocument::fromJson(reply->readAll());
-    if(_json.isEmpty())
+    PanelStatus *_lastStatus = new PanelStatus(this);
+    _lastStatus->setReqName(reply->request().attribute(QNetworkRequest::User).toString());
+
+    // check if the reply is finished
+    if(!reply->bytesAvailable())
     {
-        qCritical() << "JSON Parsing Error! Skipping...";
+        emit replyError(_lastStatus->reqName(),reply->errorString());
         return;
     }
 
-    PanelStatus *_lastStatus = new PanelStatus(this);
+    // json document parsing
+    _json = QJsonDocument::fromJson(reply->readAll());
+    if(_json.isEmpty() || _json.isNull())
+    {
+        //qCritical() << "JSON: Parsing error!" << QString("[%1]").arg(_lastStatus->reqName());
+        emit replyError(_lastStatus->reqName(),"Panel reply parsing error!");
+        return;
+    }  
+
     QJsonObject userOBJ;
     QJsonObject serverOBJ;
 

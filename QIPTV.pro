@@ -21,7 +21,8 @@ HEADERS += \
     common/qmydialog.h \
     panelform.h \
     panelrepository.h \
-    paneltypes.h
+    paneltypes.h \
+    common/qmylabel.h
 
 FORMS += \
     mainwindow.ui \

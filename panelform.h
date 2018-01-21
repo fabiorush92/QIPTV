@@ -4,13 +4,14 @@
 #include <QDialog>
 #include <QDebug>
 
+#include <common/qmydialog.h>
 #include <paneltypes.h>
 
 namespace Ui {
 class PanelForm;
 }
 
-class PanelForm : public QDialog
+class PanelForm : public QMyDialog
 {
     Q_OBJECT
 
@@ -18,8 +19,8 @@ public:
     explicit PanelForm(QWidget *parent = 0);
     ~PanelForm();
 
-    PanelInfo newForm();
-    PanelInfo newForm(PanelInfo info);
+    PanelInfo openForm();
+    PanelInfo openForm(PanelInfo info);
 
 public slots:
     void clear();

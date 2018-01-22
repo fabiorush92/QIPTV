@@ -24,7 +24,7 @@ public:
     void deleteInfo(QString name);
 
     PanelStatus* getLastStatus(QString name);
-    QList<PanelStatus *> getLastStatusList();
+    QList<PanelStatus*> getLastStatusList();
     void addStatus(PanelStatus *status);
 
 public slots:

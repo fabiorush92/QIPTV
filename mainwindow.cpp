@@ -14,9 +14,20 @@ MainWindow::MainWindow(QWidget *parent) :
     pForm->setREGref(reg);
 
     // UI setup
-    ui->setupUi(this);    
-
+    ui->setupUi(this);
     ui->statusBar->addPermanentWidget(labConnection);
+
+    // check internet connection
+    if(pManager->checkInternetConnection())
+    {
+        labConnection->setText("Connected");
+        labConnection->setColor(Qt::darkGreen);
+    }
+    else
+    {
+        labConnection->setText("Disconnected");
+        labConnection->setColor(Qt::darkRed);
+    }
 
     // restore last mainwindow state and geometry
     restoreGeometry(reg->value("MainWindowGeometry").toByteArray());
@@ -34,17 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // read repository
     readRepository();
 
-    // check internet connection
-    if(pManager->checkInternetConnection())
-    {
-        labConnection->setText("Connected");
-        labConnection->setColor(Qt::darkGreen);
-    }
-    else
-    {
-        labConnection->setText("Disconnected");
-        labConnection->setColor(Qt::darkRed);
-    }
+
 }
 
 MainWindow::~MainWindow()
@@ -149,10 +150,7 @@ void MainWindow::removeSelectedPanelFromRepository()
 
 void MainWindow::updatePanel(PanelStatus *status)
 {
-    //qDebug() << status;
     pRepo->addStatus(status);
-
-    qDebug() << pRepo->getLastStatusList();
 }
 
 void MainWindow::errorPanel(QString name, QString errorText)

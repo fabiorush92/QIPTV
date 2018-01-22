@@ -61,7 +61,15 @@ public:
     };
     Q_ENUM(AccountStatus)
 
-    explicit PanelStatus(QObject *parent = nullptr) : QObject(parent) {}
+    PanelStatus(QObject *parent = nullptr) : QObject(parent) {}
+    //PanelStatus() {}
+
+    PanelStatus &operator=(const PanelStatus &other)
+    {
+        m_reqName = other.reqName();
+    }
+
+    PanelStatus(const PanelStatus &other) {}
 
     QString reqName() const { return m_reqName; }
     void setReqName(const QString &reqName) { m_reqName = reqName; }

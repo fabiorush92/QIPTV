@@ -2,6 +2,8 @@
 
 PanelRepository::PanelRepository(QObject *parent) : QObject(parent)
 {
+    _statusList.clear();
+
     // enter into "Repository" group, needed to retrieve childGroup() list
     _reg->beginGroup("Repository");
 }
@@ -102,17 +104,19 @@ QList<PanelStatus*> PanelRepository::getLastStatusList()
 
 void PanelRepository::addStatus(PanelStatus *status)
 {
-    // delete all statuses with new status name
-    if(!_statusList.isEmpty())
-    {
-        //for(PanelStatus *Istatus : _statusList)
-        for(int i=0;i<_statusList.size();i++)
-        {
-            if(_statusList[i]->reqName() == status->reqName())
-                _statusList.removeOne(_statusList[i])
-        }
-    }
+//    // delete all statuses with new status name
+//    if(!_statusList.isEmpty())
+//    {
+//        //for(PanelStatus *Istatus : _statusList)
+//        for(int i=0;i<_statusList.size();i++)
+//        {
+//            if(_statusList[i]->reqName() == status->reqName())
+//                _statusList.removeOne(_statusList[i]);
+//        }
+//    }
 
     // append
-    _statusList.append(status);
+    _statusList << status;
+
+    qDebug() << _statusList;
 }

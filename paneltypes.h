@@ -32,7 +32,7 @@ struct PanelInfo
 
     bool operator != (const PanelInfo &rhs)
     {
-        return !(*this == rhs);
+        return !(this == &rhs);
     }
 };
 

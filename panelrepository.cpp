@@ -89,7 +89,7 @@ PanelStatus* PanelRepository::getLastStatus(QString name)
     for(int i=0;i<_statusList.size();i++)
     {
         if(_statusList[i]->reqName() == name)
-            return PanelStatus(_statusList[i]);
+            return _statusList[i];
     }
 
     return new PanelStatus();

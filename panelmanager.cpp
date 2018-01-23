@@ -62,7 +62,7 @@ bool PanelManager::checkInternetConnection()
 
 void PanelManager::replyFinished(QNetworkReply *reply)
 {
-    PanelStatus *_lastStatus = new PanelStatus(this);
+    PanelStatus *_lastStatus = new PanelStatus();
     _lastStatus->setReqName(reply->request().attribute(QNetworkRequest::User).toString());
 
     // check if the reply is finished
@@ -138,7 +138,7 @@ void PanelManager::replyFinished(QNetworkReply *reply)
 
     // delete objects
     reply->deleteLater();
-    _lastStatus->deleteLater();
+    //_lastStatus->deleteLater();   // DO NOT DELETE HERE BEFORE APPENDING INTO REPOSITORY !!!
 
     // throw new status
     emit newPanelStatus(_lastStatus);

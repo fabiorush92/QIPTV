@@ -61,15 +61,10 @@ public:
     };
     Q_ENUM(AccountStatus)
 
-    PanelStatus(QObject *parent = nullptr) : QObject(parent) {}
-    //PanelStatus() {}
-
-    PanelStatus &operator=(const PanelStatus &other)
-    {
-        m_reqName = other.reqName();
-    }
-
-    PanelStatus(const PanelStatus &other) {}
+    //PanelStatus(QObject *parent = nullptr) : QObject(parent) {}
+    PanelStatus() {}
+    PanelStatus &operator=(const PanelStatus &other);
+    PanelStatus(const PanelStatus &other);
 
     QString reqName() const { return m_reqName; }
     void setReqName(const QString &reqName) { m_reqName = reqName; }
@@ -113,9 +108,9 @@ inline QDebug operator << (QDebug dbg, PanelStatus *status)
 {
     dbg.space() << "PanelStatus ["
                 << QString("RequestName:%1").arg(status->reqName())
-                << QString("Username:%1").arg(status->username())
-                << QString("Password:%1").arg(status->password())
-                << QString("Auth:%1").arg(status->auth())
+                //<< QString("Username:%1").arg(status->username())
+                //<< QString("Password:%1").arg(status->password())
+                //<< QString("Auth:%1").arg(status->auth())
                 << QString("Status:%1").arg(QMetaEnum::fromType<PanelStatus::AccountStatus>().valueToKey(status->accountStatus()))
                 << QString("Active:%1").arg(status->activeConnections())
                 << QString("Max:%1").arg(status->maxConnections())

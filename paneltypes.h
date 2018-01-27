@@ -39,7 +39,7 @@ struct PanelInfo
 inline QDebug operator << (QDebug dbg, PanelInfo info)
 {
     dbg.space() << "PanelInfo ["
-                << QString("IsValid:%1").arg((bool)info.isValid())
+                //<< QString("IsValid:%1").arg((bool)info.isValid())
                 << QString("Name:%1").arg(info.name)
                 << QString("Host:%1").arg(info.host)
                 << QString("Username:%1").arg(info.username)

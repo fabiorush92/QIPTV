@@ -42,10 +42,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::updatePanel);
     connect(pManager,&PanelManager::replyError,this,&MainWindow::errorPanel);
 
-    // read repository
-    readRepository();
+    // update table
+    updateTable();
 
-
+    PanelInfo info;
+    info.name = ui->label_9->text();
+    qDebug() << info;
 }
 
 MainWindow::~MainWindow()
@@ -86,19 +88,30 @@ void MainWindow::setTableItem(int row, int column, QString string)
 }
 
 void MainWindow::addPanelToTable(PanelInfo info)
+{  
+    ui->tablePanels->setRowCount(ui->tablePanels->rowCount() + 1);      // increase row count
+    int index = ui->tablePanels->rowCount() - 1;                        // save index
+    setTableItem(index,0,info.name);                                    // always set name of panel into table
+    insertStatusIntoTable(pRepo->getLastStatus(info.name));             // search status
+}
+
+void MainWindow::insertStatusIntoTable(PanelStatus *status)
 {
-    ui->tablePanels->setRowCount(ui->tablePanels->rowCount() + 1);
+    // if the account status is Unknown the status is not inizialized
+    if(status->accountStatus() == PanelStatus::Unknown)
+        return;
 
-    int index = ui->tablePanels->rowCount() - 1;
+    // find correct panel row
 
-    setTableItem(index,0,info.name);
+    fare una funzione veloce per ottenere la riga della table in base al nome
+
+
 }
 
 void MainWindow::clearTable()
 {
-    ui->tablePanels->clear();
-
     // NAME ACCOUNTSTATUS VISIONSTATUS EXPIREDATE INFOS
+    ui->tablePanels->clear();
     ui->tablePanels->setColumnCount(5);
     ui->tablePanels->setRowCount(0);
 
@@ -110,7 +123,7 @@ void MainWindow::clearTable()
     ui->tablePanels->horizontalHeader()->setStretchLastSection(true);
 }
 
-void MainWindow::readRepository()
+void MainWindow::updateTable()
 {
     // stop panel manager
     pManager->stop();
@@ -140,12 +153,18 @@ void MainWindow::addNewPanelToRepository()
 {
     pRepo->addInfo(pForm->openForm());
 
-    readRepository();
+    updateTable();
 }
 
 void MainWindow::removeSelectedPanelFromRepository()
 {
+    if(ui->tablePanels->selectedItems().size() > 0)
+    {
+        int row = ui->tablePanels->selectedItems().at(0)->row();
+        pRepo->deleteInfo(pRepo->getInfo(ui->tablePanels->item(row,0)->text()));
+    }
 
+    updateTable();
 }
 
 void MainWindow::updatePanel(PanelStatus *status)

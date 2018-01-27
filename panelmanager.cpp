@@ -76,7 +76,6 @@ void PanelManager::replyFinished(QNetworkReply *reply)
     _json = QJsonDocument::fromJson(reply->readAll());
     if(_json.isEmpty() || _json.isNull())
     {
-        //qCritical() << "JSON: Parsing error!" << QString("[%1]").arg(_lastStatus->reqName());
         emit replyError(_lastStatus->reqName(),"Panel reply parsing error!");
         return;
     }  

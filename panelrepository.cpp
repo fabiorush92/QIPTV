@@ -55,11 +55,11 @@ QList<PanelInfo> PanelRepository::getInfoList()
 
 void PanelRepository::setInfo(PanelInfo info)
 {
-    if(!info.isValid())
-    {
-        qWarning() << "Repository: Panel not valid!";
-        return;
-    }
+//    if(!info.isValid())
+//    {
+//        qWarning() << "Repository: Panel not valid!";
+//        return;
+//    }
 
     _reg->setValue(QString("%1/Host").arg(info.name), info.host);
     _reg->setValue(QString("%1/Username").arg(info.name), info.username);

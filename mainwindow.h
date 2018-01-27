@@ -42,10 +42,11 @@ private:
     void setTableItem(int row, int column, QString string);
     //void setTableItem(int row, int column, QWidget *widget);
     void addPanelToTable(PanelInfo info);
+    void insertStatusIntoTable(PanelStatus *status);
 
 private slots:
     void clearTable();
-    void readRepository();
+    void updateTable();
     void addNewPanelToRepository();
     void removeSelectedPanelFromRepository();
 

@@ -7,6 +7,9 @@ PanelForm::PanelForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // disabling deleteonclose, to permits ui values retention after closing
+    this->setDeleteOnClose(false);
+
     connect(ui->buttonBox,&QDialogButtonBox::accepted,this,&PanelForm::checkInfo);
     connect(ui->buttonBox,&QDialogButtonBox::rejected,this,&PanelForm::reject);
     connect(ui->lineURL,&QLineEdit::textChanged,this,&PanelForm::parseURL);
@@ -23,13 +26,13 @@ PanelInfo PanelForm::openForm()
 }
 
 PanelInfo PanelForm::openForm(PanelInfo info)
-{
+{  
     this->clear();
     this->insertInfo(info);
 
-    PanelInfo newinfo;
     int ret = this->exec();
 
+    PanelInfo newinfo;
     if(ret == QDialog::Accepted)
     {
         newinfo.name = ui->lineName->text();

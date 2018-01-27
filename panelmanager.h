@@ -31,6 +31,7 @@ public:
 
     bool checkInternetConnection();
     void subscribePanel(PanelInfo info) { _listPanels << info; }
+    bool isAutoUpdateEnabled() { return _timer->isActive(); }
 
 signals:
     void newPanelStatus(PanelStatus*);

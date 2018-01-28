@@ -37,7 +37,8 @@ private:
 
     void closeEvent(QCloseEvent *event);
 
-    int searchInfoIntoTable(PanelInfo info);
+    int searchIntoTable(QString name);
+    int searchIntoTable(PanelInfo info);
     PanelInfo getSelectedInfo();
     void setTableItem(int row, int column, QString string);
     //void setTableItem(int row, int column, QWidget *widget);
@@ -50,8 +51,8 @@ private slots:
     void addNewPanelToRepository();
     void removeSelectedPanelFromRepository();
 
-    void updatePanel(PanelStatus *status);
-    void errorPanel(QString name, QString errorText);
+    void displayStatus(PanelStatus *status);
+    void displayError(QString errorPanel, QString errorText);
 };
 
 #endif // MAINWINDOW_H

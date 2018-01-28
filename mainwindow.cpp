@@ -39,15 +39,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAddPanel,&QAction::triggered,this,&MainWindow::addNewPanelToRepository);
 
     // logic connections
-    connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::updatePanel);
-    connect(pManager,&PanelManager::replyError,this,&MainWindow::errorPanel);
+    connect(pManager,&PanelManager::newPanelStatus,this,&MainWindow::displayStatus);
+    connect(pManager,&PanelManager::replyError,this,&MainWindow::displayError);
 
     // update table
     updateTable();
-
-    PanelInfo info;
-    info.name = ui->label_9->text();
-    qDebug() << info;
 }
 
 MainWindow::~MainWindow()
@@ -70,16 +66,21 @@ PanelInfo MainWindow::getSelectedInfo()
     return pRepo->getInfo(ui->tablePanels->item(ui->tablePanels->selectedItems().at(0)->row(), 0)->text());
 }
 
-int MainWindow::searchInfoIntoTable(PanelInfo info)
+int MainWindow::searchIntoTable(QString name)
 {
     for(int i=0;i<ui->tablePanels->rowCount();i++)
     {
-        if(ui->tablePanels->item(i,0)->text() == info.name)
+        if(ui->tablePanels->item(i,0)->text() == name)
             return i;   // name finded, return index
     }
 
     // search failed
     return -1;
+}
+
+int MainWindow::searchIntoTable(PanelInfo info)
+{
+    return searchIntoTable(info.name);
 }
 
 void MainWindow::setTableItem(int row, int column, QString string)
@@ -92,7 +93,7 @@ void MainWindow::addPanelToTable(PanelInfo info)
     ui->tablePanels->setRowCount(ui->tablePanels->rowCount() + 1);      // increase row count
     int index = ui->tablePanels->rowCount() - 1;                        // save index
     setTableItem(index,0,info.name);                                    // always set name of panel into table
-    insertStatusIntoTable(pRepo->getLastStatus(info.name));             // search status
+    insertStatusIntoTable(pRepo->getLastStatus(info.name));             // search status and compile table
 }
 
 void MainWindow::insertStatusIntoTable(PanelStatus *status)
@@ -102,37 +103,36 @@ void MainWindow::insertStatusIntoTable(PanelStatus *status)
         return;
 
     // find correct panel row
+    int index = searchIntoTable(status->reqName());
+    if(index < 0)
+        return;
 
-    fare una funzione veloce per ottenere la riga della table in base al nome
-
-
+    // compile row
+    setTableItem(index,1,QMetaEnum::fromType<PanelStatus::AccountStatus>().valueToKey(status->accountStatus()));
+    setTableItem(index,2,QString("%1/%2").arg(status->activeConnections()).arg(status->maxConnections()));
+    setTableItem(index,3,status->DTExpire().toString("dd/MM/yyyy HH:mm"));
 }
 
 void MainWindow::clearTable()
 {
-    // NAME ACCOUNTSTATUS VISIONSTATUS EXPIREDATE INFOS
     ui->tablePanels->clear();
     ui->tablePanels->setColumnCount(5);
     ui->tablePanels->setRowCount(0);
 
-    // hide headers
-    ui->tablePanels->horizontalHeader()->setVisible(false);
+    ui->tablePanels->setHorizontalHeaderLabels(QStringList() << "Name" << "Status" << "Connections" << "Expiring date" << "Other infos");
     ui->tablePanels->verticalHeader()->setVisible(false);
 
     // stretch last section
+    ui->tablePanels->resizeColumnsToContents();
+    ui->tablePanels->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tablePanels->horizontalHeader()->setStretchLastSection(true);
 }
 
 void MainWindow::updateTable()
 {
-    // stop panel manager
-    pManager->stop();
-
-    // clear table
-    clearTable();
-
-    // unsubscribe
-    pManager->unsubscribeAll();
+    pManager->stop();               // stop panel manager
+    clearTable();                   // clear table
+    pManager->unsubscribeAll();     // unsubscribe all panel into manager
 
     // get panels from repo, add to the table and subscribe all
     for(PanelInfo info : pRepo->getInfoList())
@@ -141,18 +141,12 @@ void MainWindow::updateTable()
         pManager->subscribePanel(info);
     }
 
-    // resize table
-    ui->tablePanels->resizeRowsToContents();
-    ui->tablePanels->resizeColumnsToContents();
-
-    // start panel manager
-    pManager->start();
+    pManager->start();              // start panel manager
 }
 
 void MainWindow::addNewPanelToRepository()
 {
     pRepo->addInfo(pForm->openForm());
-
     updateTable();
 }
 
@@ -162,17 +156,17 @@ void MainWindow::removeSelectedPanelFromRepository()
     {
         int row = ui->tablePanels->selectedItems().at(0)->row();
         pRepo->deleteInfo(pRepo->getInfo(ui->tablePanels->item(row,0)->text()));
-    }
-
-    updateTable();
+        updateTable();
+    }  
 }
 
-void MainWindow::updatePanel(PanelStatus *status)
+void MainWindow::displayStatus(PanelStatus *status)
 {
     pRepo->addStatus(status);
+    insertStatusIntoTable(status);
 }
 
-void MainWindow::errorPanel(QString name, QString errorText)
+void MainWindow::displayError(QString errorPanel, QString errorText)
 {
-    ui->statusBar->showMessage(QString("[%1] Error: %2").arg(name).arg(errorText),3000);
+    ui->statusBar->showMessage(QString("[%1] Error: %2").arg(errorPanel).arg(errorText),3000);
 }
